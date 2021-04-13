@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Clients } from "./services/api/client";
+import { Policies } from "./services/api/policy";
 
-function App() {
+type Client = {
+  account: string;
+  document: string;
+  name: string;
+  policyId: number;
+  status: string;
+};
+
+export default function App() {
+  const [results, setResults] = useState<Client[]>([]);
+  const [error, setError] = useState<Error>({} as Error);
+
+  useEffect(() => {
+    (async () => {
+      const { results, error } = await Clients.search("1");
+
+      setResults(results);
+      setError(error);
+    })();
+  }, []);
+
+  function handleNewPolicy() {
+    Policies.create({
+      name: "Testezi",
+      parentId: 1,
+      parameters: [
+        {
+          market: "FRA",
+          name: "MarginByContract",
+          symbol: "",
+          value: 200,
+        },
+      ],
+    });
+  }
+
+  if (error.message) <p>Ocorreu um erro</p>;
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {results?.map((client) => (
+        <div>{client.document}</div>
+      ))}
+
+      <button type="button" onClick={handleNewPolicy}>
+        Cadastrar Política
+      </button>
     </div>
   );
 }
-
-export default App;
