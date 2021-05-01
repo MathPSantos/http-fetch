@@ -3,6 +3,7 @@ import * as fetch from "../fetch";
 type Client = {
   account: string;
   document: string;
+  documentAsString?: string;
   name: string;
   policyId: number;
   status: string;
@@ -16,16 +17,20 @@ type Register = {
 };
 
 export const Clients = {
-  search: async (query: string) => {
+  search: async (q: string) => {
     let results: Client[] = [],
       error: Error = {} as Error;
 
     try {
-      const response = await fetch.get<Client[]>(`client/search?q=${query}`);
+      const response = await fetch.get<Client[]>(`client/search`, {
+        params: {
+          q,
+        },
+      });
 
       const searchResult = response?.map((client) => ({
         ...client,
-        document: formatCpfCnpj(client.document),
+        documentAsString: formatCpfCnpj(client.document),
       }));
 
       results = searchResult;

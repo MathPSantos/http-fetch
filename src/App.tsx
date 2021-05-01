@@ -23,19 +23,21 @@ export default function App() {
     })();
   }, []);
 
+  const newPolicy = {
+    name: "Testezi",
+    parentId: 1,
+    parameters: [
+      {
+        market: "FRA",
+        name: "MarginByContract",
+        symbol: "",
+        value: 200,
+      },
+    ],
+  };
+
   function handleNewPolicy() {
-    Policies.create({
-      name: "Testezi",
-      parentId: 1,
-      parameters: [
-        {
-          market: "FRA",
-          name: "MarginByContract",
-          symbol: "",
-          value: 200,
-        },
-      ],
-    });
+    Policies.create(newPolicy);
   }
 
   if (error.message) <p>Ocorreu um erro</p>;

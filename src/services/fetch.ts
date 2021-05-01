@@ -1,8 +1,20 @@
 import { API_URL, API_HEADERS } from "../constants";
+import { objToQueryString } from "./utils";
 
-async function http<T>(endpoint: string, config: RequestInit): Promise<T> {
+interface Config extends RequestInit {
+  params?: {
+    [key: string]: string | number | boolean;
+  };
+}
+
+async function http<T>(endpoint: string, config: Config): Promise<T> {
   const init = { ...config, headers: API_HEADERS };
-  const request = new Request(API_URL + endpoint, init);
+
+  const queryParams = objToQueryString(config?.params);
+
+  const URL = API_URL + endpoint + queryParams;
+
+  const request = new Request(URL, init);
   const response = await fetch(request);
 
   if (!response.ok) {
@@ -12,10 +24,7 @@ async function http<T>(endpoint: string, config: RequestInit): Promise<T> {
   return response.json().catch(() => ({}));
 }
 
-export async function get<T>(
-  endpoint: string,
-  config?: RequestInit
-): Promise<T> {
+export async function get<T>(endpoint: string, config?: Config): Promise<T> {
   const init = { method: "GET", ...config };
   return await http<T>(endpoint, init);
 }
